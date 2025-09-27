@@ -1,0 +1,9 @@
+{
+  "name": "instituto/mvc",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+  }
+}
