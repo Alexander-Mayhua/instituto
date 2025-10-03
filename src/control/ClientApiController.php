@@ -10,3 +10,17 @@ class ClientApiController {
     public function update(){ require_login(); ClientApi::update($_POST['id'], $_POST); set_flash('success','Cliente actualizado'); redirect('?c=clientapi'); }
     public function delete(){ require_login(); ClientApi::delete($_GET['id']??0); set_flash('success','Cliente eliminado'); redirect('?c=clientapi'); }
 }
+/*
+if($tipo=="verclientapiByNonmbre"){
+    $token_arr = explode("-", $token);
+    $id_cliente = $token_arr[2];
+    $arr_Cliente = $objApi->buscarClienteById($id_cliente);
+    if($arr_Cliente->estado){
+        $data = $_POST['data'];
+        $arr_bienes = $objApi->buscarBienByDeniminacion($data);
+        $arr_Respuesta=array('status' => true,'msg'='', 'contenido' =>$arr_bioenes);
+    }else{
+        $arr_Respuesta=array('status' => false,'msg'='Error, cliente no activo');
+    }
+    echo json_enconde ()
+}*/

@@ -9,4 +9,7 @@ class TokensController {
     public function edit(){ require_login(); $row = Token::find($_GET['id']??0); $clients = Token::clients(); view('tokens/form', compact('row','clients')); }
     public function update(){ require_login(); Token::update($_POST['id'], $_POST); set_flash('success','Token actualizado'); redirect('?c=tokens'); }
     public function delete(){ require_login(); Token::delete($_GET['id']??0); set_flash('success','Token eliminado'); redirect('?c=tokens'); }
+
+   
+
 }
