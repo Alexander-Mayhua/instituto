@@ -21,4 +21,15 @@ class ClientApi {
     public static function delete($id) {
         db()->prepare('DELETE FROM client_api WHERE id=?')->execute([$id]);
     }
+/*
+    public function buscarClienteByDenominacion($data)
+    {
+        $arrRespuesta = array[];
+        $sql=$this->conexion->query("SELECT * FROM cliente_api denominacion='$data"");
+        while ($objeto= $sql->fetch_objeto()){
+        array_push($arrauRespuesta,$objeto);
+        }
+        return $arrRespuesta;
+    }*/
 }
+    

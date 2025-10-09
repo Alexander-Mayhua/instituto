@@ -11,16 +11,16 @@ class ClientApiController {
     public function delete(){ require_login(); ClientApi::delete($_GET['id']??0); set_flash('success','Cliente eliminado'); redirect('?c=clientapi'); }
 }
 /*
-if($tipo=="verclientapiByNonmbre"){
+if($tipo=="verclienteapiByNonmbre"){
     $token_arr = explode("-", $token);
     $id_cliente = $token_arr[2];
     $arr_Cliente = $objApi->buscarClienteById($id_cliente);
     if($arr_Cliente->estado){
         $data = $_POST['data'];
-        $arr_bienes = $objApi->buscarBienByDeniminacion($data);
+        $arr_bienes = $objApi->buscarclienteByDenominacion($data);
         $arr_Respuesta=array('status' => true,'msg'='', 'contenido' =>$arr_bioenes);
     }else{
         $arr_Respuesta=array('status' => false,'msg'='Error, cliente no activo');
     }
-    echo json_enconde ()
+    echo json_enconde ($arr_Respuesta);
 }*/
