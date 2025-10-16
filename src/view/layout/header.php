@@ -37,6 +37,7 @@ body{ background:#f5f7fb; }
       <a class="<?= ($_GET['c']??'')==='usuarios'?'active':'' ?>" href="?c=usuarios">👥 Usuarios</a>
       <a class="<?= ($_GET['c']??'')==='clientapi'?'active':'' ?>" href="?c=clientapi">🧩 Client API</a>
       <a class="<?= ($_GET['c']??'')==='tokens'?'active':'' ?>" href="?c=tokens">🔑 Tokens</a>
+      <a class="<?= ($_GET['c']??'')==='consumoapi'?'active':'' ?>" href="?c=consumoapi">📊 Consumo API</a>
       <hr>
       <a href="?c=auth&a=logout">⏻ Salir</a>
     </aside>

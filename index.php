@@ -14,6 +14,7 @@ $map = [
   'usuarios' => 'UsuariosController',
   'clientapi' => 'ClientApiController',
   'tokens' => 'TokensController',
+  'consumoapi' =>'consumoApiController'
 ];
 
 if (!isset($map[$c])) { http_response_code(404); echo 'Controlador no encontrado'; exit; }
