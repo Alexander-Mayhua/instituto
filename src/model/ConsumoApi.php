@@ -20,4 +20,19 @@ class ConsumoApi
         $st->execute(['%' . $data . '%']);
         return $st->fetchAll();
     }
+    public static function buscarClienteByIdYDenominacion(int $id, string $data = ''): array
+{
+    if ($data === '') {
+        $st = db()->prepare('SELECT * FROM client_api WHERE id = ? LIMIT 1');
+        $st->execute([$id]);
+        $row = $st->fetch();
+        return $row ? [$row] : [];
+    }
+
+    $st = db()->prepare('SELECT * FROM client_api WHERE id = ? AND razon_social LIKE ? LIMIT 1');
+    $st->execute([$id, '%'.$data.'%']);
+    $row = $st->fetch();
+    return $row ? [$row] : [];
+}
+
 }
