@@ -9,11 +9,11 @@
     <div class="row g-3 align-items-end">
       <div class="col-md-4">
         <label class="form-label">Token</label>
-        <input type="text" name="token" id="token" class="form-control" placeholder="Ejemplo: API-123-1" required>
+        <input type="text" name="token" id="token" class="form-control" placeholder="Token" >
       </div>
       <div class="col-md-4">
         <label class="form-label">Razón Social</label>
-        <input type="text" name="data" id="data" class="form-control" placeholder="Ejemplo: Cielo de Vestido">
+        <input type="text" name="data" id="data" class="form-control" placeholder="Razon Social">
       </div>
       <input type="hidden" name="tipo" value="verclienteapiByNombre">
       <div class="col-md-4">

@@ -10,12 +10,12 @@
   <div class="col-sm-6 col-lg-3"><div class="card p-3"><div class="small text-muted">Usuarios</div><div class="h3"><?= (int)$metrics['usuarios'] ?></div></div></div>
   <div class="col-sm-6 col-lg-3"><div class="card p-3"><div class="small text-muted">Clientes API</div><div class="h3"><?= (int)$metrics['clientes'] ?></div></div></div>
   <div class="col-sm-6 col-lg-3"><div class="card p-3"><div class="small text-muted">Tokens</div><div class="h3"><?= (int)$metrics['tokens'] ?></div></div></div>
-  <div class="col-sm-6 col-lg-3">
+ <div class="col-sm-6 col-lg-3">
   <div class="card p-3">
     <div class="small text-muted">Consumo API</div>
-    <div class="h3"><?= (int)$metrics['consumoapi'] ?></div>
+    <div class="h3"><?= (int)($metrics['consumoapi'] ?? 0) ?></div>
   </div>
-</div>
+</div
 
 </div>
 <div class="row g-3">

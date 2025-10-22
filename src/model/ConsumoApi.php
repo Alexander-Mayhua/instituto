@@ -35,4 +35,31 @@ class ConsumoApi
     return $row ? [$row] : [];
 }
 
+   
+
+
+// NUEVO: búsqueda global por razón social (LIKE %texto%), con límite/offset
+public static function buscarClientesPorDenominacion(string $texto, int $limit = 50, int $offset = 0): array
+{
+    $texto = trim($texto);
+    if ($texto === '') {
+        return [];
+    }
+    if ($limit < 1 || $limit > 200) $limit = 50;
+    if ($offset < 0) $offset = 0;
+
+    $sql = 'SELECT *
+            FROM client_api
+            WHERE estado = \'Activo\' AND razon_social LIKE ?
+            ORDER BY razon_social ASC
+            LIMIT ? OFFSET ?';
+    $st = db()->prepare($sql);
+    $st->bindValue(1, '%'.$texto.'%', PDO::PARAM_STR);
+    $st->bindValue(2, $limit, PDO::PARAM_INT);
+    $st->bindValue(3, $offset, PDO::PARAM_INT);
+    $st->execute();
+    return $st->fetchAll();
+}
+
+
 }
