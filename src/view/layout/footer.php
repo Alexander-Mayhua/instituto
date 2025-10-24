@@ -4,7 +4,8 @@ require_once __DIR__ . '/../../library/helpers.php';
 
 $controller = strtolower($_GET['c'] ?? '');
 $action     = strtolower($_GET['a'] ?? 'index');
-$hideChrome = ($controller === 'consumoapi'); // mismo criterio que en header.php
+$hideChrome = ($controller === 'consumoapi'); 
+// mismo criterio que en header.php
 ?>
 
 <?php if (!$hideChrome && is_logged()): ?>

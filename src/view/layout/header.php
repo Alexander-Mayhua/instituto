@@ -5,7 +5,8 @@ require_once __DIR__ . '/../../library/helpers.php';
 // ✅ Ocultar header/footer cuando c=consumoapi (y opcionalmente por acción)
 $controller = strtolower($_GET['c'] ?? '');
 $action     = strtolower($_GET['a'] ?? 'index');
-$hideChrome = ($controller === 'consumoapi'); // si quieres solo en index: && $action === 'index'
+$hideChrome = ($controller === 'consumoapi');
+// si quieres solo en index: && $action === 'index'
 ?>
 <!doctype html>
 <html lang="es">
@@ -43,6 +44,8 @@ body{ background:#f5f7fb; }
       <a class="<?= ($_GET['c']??'')==='clientapi'?'active':'' ?>" href="?c=clientapi">🧩 Client API</a>
       <a class="<?= ($_GET['c']??'')==='tokens'?'active':'' ?>" href="?c=tokens">🔑 Tokens</a>
       <a class="<?= ($_GET['c']??'')==='consumoapi'?'active':'' ?>" href="?c=consumoapi">📊 Consumo API</a>
+<a class="<?= ($_GET['c'] ?? '') === 'consumodocente' ? 'active' : '' ?>" href="?c=consumodocente">📊 Consumo API Docente</a>
+
       <hr>
       <a href="?c=auth&a=logout">⏻ Salir</a>
     </aside>
