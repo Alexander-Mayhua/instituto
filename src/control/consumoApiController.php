@@ -2,75 +2,57 @@
 // src/control/consumoApiController.php
 require_once __DIR__ . '/../library/helpers.php';
 require_once __DIR__ . '/../model/ClientApi.php';
+require_once __DIR__ . '/../model/ConsumoApi.php';   // valida token + búsquedas
 
 class ConsumoApiController
 {
-    // 👉 Método principal que carga la vista
     public function index()
     {
-        // no requiere login, solo muestra el formulario de búsqueda
         view('consumoapi/index');
     }
 
-   public function verClienteApiByNombre()
+    // Ruta: ?c=consumoapi&a=verDocenteApiByNombreODni
+    // Espera: POST { tipo:'verdocenteapibynombreodni', token, data }
+    public function verDocenteApiByNombreODni()
 {
-    require_once __DIR__ . '/../model/ConsumoApi.php';
+    require_once __DIR__ . '/../model/ConsumoApi.php'; // trae buscarDocentes y (opcional) valida cliente
+    header('Content-Type: application/json; charset=utf-8');
 
-    $tipo   = $_POST['tipo']  ?? '';
-    $token  = trim((string)($_POST['token'] ?? ''));
-    $term   = trim((string)($_POST['data']  ?? ''));
+    $tipo  = strtolower($_POST['tipo'] ?? '');
+    $term  = trim((string)($_POST['data'] ?? ''));
+    $token = trim((string)($_POST['token'] ?? '')); // <-- ahora OPCIONAL
 
-    if ($tipo !== 'verclienteapiByNombre') {
-        echo json_encode(['status' => false, 'msg' => 'Parámetro tipo inválido']);
-        return;
+    if ($tipo !== 'verdocenteapibynombreodni') {
+        echo json_encode(['status' => false, 'msg' => 'Parámetro tipo inválido']); return;
     }
 
-    // 1) Si HAY texto y NO hay token -> búsqueda global por nombre (LIKE %texto%)
-    if ($term !== '' && $token === '') {
-        $arr_clientes = ConsumoApi::buscarClientesPorDenominacion($term, 50, 0); // solo Activos si así lo pusiste en el modelo
-        echo json_encode(['status' => true, 'msg' => '', 'contenido' => $arr_clientes]);
-        return;
+    // ✅ Token OPCIONAL: si viene, se valida; si no viene, se continúa sin bloquear.
+    if ($token !== '') {
+        $parts = array_filter(array_map('trim', explode('-', $token)), 'strlen');
+        $last  = end($parts);
+        $id_cliente = (ctype_digit($last) ? (int)$last : null);
+
+        if (!$id_cliente) {
+            echo json_encode(['status' => false, 'msg' => 'Token inválido o incompleto']); return;
+        }
+
+        $owner  = ConsumoApi::buscarClienteById($id_cliente);
+        $estado = is_array($owner) ? ($owner['estado'] ?? null) : null;
+        if (!$owner || $estado !== 'Activo') {
+            echo json_encode(['status' => false, 'msg' => 'Error, cliente no activo o no encontrado']); return;
+        }
+        // Si llega aquí, token válido; pero la búsqueda NO se relaciona al token.
     }
 
-    // 2) En los demás casos, el token es obligatorio (para devolver solo el dueño o validar acceso)
-    if ($token === '') {
-        echo json_encode(['status' => false, 'msg' => 'Token requerido (o ingrese texto para buscar por nombre).']);
-        return;
-    }
-
-    // ID = último segmento del token
-    $parts = explode('-', $token);
-    $last  = end($parts);
-    $id_cliente = (ctype_digit($last) ? (int)$last : null);
-
-    if (!$id_cliente) {
-        echo json_encode(['status' => false, 'msg' => 'Token inválido o incompleto']);
-        return;
-    }
-
-    // Verificar dueño/token activo
-    $owner = ConsumoApi::buscarClienteById($id_cliente);
-    if (!$owner || ($owner['estado'] ?? null) !== 'Activo') {
-        echo json_encode(['status' => false, 'msg' => 'Error, cliente no activo o no encontrado']);
-        return;
-    }
-
-    // 2a) Si NO hay texto -> solo el cliente del token
     if ($term === '') {
-        $arr_clientes = ConsumoApi::buscarClienteByIdYDenominacion($id_cliente, '');
-        echo json_encode(['status' => true, 'msg' => '', 'contenido' => $arr_clientes]);
-        return;
+        echo json_encode(['status' => true, 'msg' => '', 'contenido' => []]); return;
     }
 
-    // 2b) Si HAY texto y SÍ hay token -> (elige política)
-    // Política A: búsqueda global por nombre
-    $arr_clientes = ConsumoApi::buscarClientesPorDenominacion($term, 50, 0);
-
-    // // Política B (si prefieres scoped): exigir que el nombre coincida con el MISMO id del token
-    // $arr_clientes = ConsumoApi::buscarClienteByIdYDenominacion($id_cliente, $term);
-
-    echo json_encode(['status' => true, 'msg' => '', 'contenido' => $arr_clientes]);
+    try {
+        $docentes = ConsumoApi::buscarDocentes($term, 50, 0); // DNI exacto o LIKE por nombres/apellidos
+        echo json_encode(['status' => true, 'msg' => '', 'contenido' => $docentes]);
+    } catch (\Throwable $e) {
+        echo json_encode(['status' => false, 'msg' => 'Error interno']);
+    }
 }
-
-
 }

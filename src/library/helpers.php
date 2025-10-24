@@ -37,3 +37,4 @@ function get_flash($type) {
     return null;
 }
 function e($str){ return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
+
