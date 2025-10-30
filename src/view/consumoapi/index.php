@@ -22,8 +22,9 @@ $tokenValue = $_SESSION['api_token'] ?? ($_GET['token'] ?? ''); // <- ajusta si 
         <input type="hidden" name="tipo" value="verdocenteapibynombreodni">
       </div>
 
-      <div class="col-md-4">
-        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+     <div class="col-md-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-fill">Buscar</button>
+        <button type="button" class="btn btn-outline-secondary flex-fill" id="btnLimpiar">Limpiar</button>
       </div>
     </div>
   </form>
@@ -70,14 +71,14 @@ document.getElementById('formBuscarDocente').addEventListener('submit', function
           <thead class="table-light">
             <tr>
               <th>#</th>
-              <th>ID</th>
+             
               <th>DNI</th>
               <th>Nombres</th>
               <th>Apellidos</th>
               <th>Especialidad</th>
               <th>Grado Académico</th>
               <th>Estado</th>
-              <th>Fecha Registro</th>
+            
             </tr>
           </thead>
           <tbody>
@@ -89,14 +90,14 @@ document.getElementById('formBuscarDocente').addEventListener('submit', function
       html += `
         <tr>
           <td>${i}</td>
-          <td>${esc(d.id_docente)}</td>
+         
           <td>${esc(d.dni)}</td>
           <td>${esc(d.nombres)}</td>
           <td>${esc(d.apellidos)}</td>
           <td>${esc(d.especialidad || '-')}</td>
           <td>${esc(d.grado_academico || '')}</td>
           <td><span class="badge bg-${activo ? 'success' : 'secondary'}">${esc(d.estado || '')}</span></td>
-          <td>${esc(d.fecha_registro || '')}</td>
+          
         </tr>`;
     });
     html += '</tbody></table></div>';
@@ -108,6 +109,12 @@ document.getElementById('formBuscarDocente').addEventListener('submit', function
     document.getElementById('resultado').innerHTML =
       '<div class="alert alert-danger">Error al conectar con el servidor.</div>';
   });
+});
+// 🧹 Botón Limpiar
+document.getElementById('btnLimpiar').addEventListener('click', function() {
+  document.getElementById('data').value = '';
+  document.getElementById('resultado').innerHTML =
+    '<div class="text-muted">Escriba un nombre/apellido o un DNI para buscar.</div>';
 });
 
 function esc(v){
