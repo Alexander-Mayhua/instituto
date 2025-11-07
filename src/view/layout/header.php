@@ -1,7 +1,12 @@
 <?php
-// src/view/layout/header.php
 if (session_status()===PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../../library/helpers.php';
+
+// ✅ Ocultar header/footer cuando c=consumoapi (y opcionalmente por acción)
+$controller = strtolower($_GET['c'] ?? '');
+$action     = strtolower($_GET['a'] ?? 'index');
+$hideChrome = ($controller === 'consumoapi');
+// si quieres solo en index: && $action === 'index'
 ?>
 <!doctype html>
 <html lang="es">
@@ -21,7 +26,8 @@ body{ background:#f5f7fb; }
 </style>
 </head>
 <body>
-<?php if(is_logged()): ?>
+
+<?php if (!$hideChrome && is_logged()): ?>
 <div class="container-fluid">
   <div class="row">
     <aside class="col-12 col-md-3 col-lg-2 p-3 sidebar">
@@ -37,6 +43,8 @@ body{ background:#f5f7fb; }
       <a class="<?= ($_GET['c']??'')==='usuarios'?'active':'' ?>" href="?c=usuarios">👥 Usuarios</a>
       <a class="<?= ($_GET['c']??'')==='clientapi'?'active':'' ?>" href="?c=clientapi">🧩 Client API</a>
       <a class="<?= ($_GET['c']??'')==='tokens'?'active':'' ?>" href="?c=tokens">🔑 Tokens</a>
+      <a class="<?= ($_GET['c']??'')==='consumoapi'?'active':'' ?>" href="?c=consumoapi">📊 Consumo API</a>
+
       <hr>
       <a href="?c=auth&a=logout">⏻ Salir</a>
     </aside>
@@ -44,5 +52,6 @@ body{ background:#f5f7fb; }
       <?php if($m=get_flash('success')): ?><div class="alert alert-success"><?= e($m) ?></div><?php endif; ?>
       <?php if($m=get_flash('danger')): ?><div class="alert alert-danger"><?= e($m) ?></div><?php endif; ?>
 <?php else: ?>
-<div class="container py-5">
+<!-- Modo sin chrome (consumoapi o sin login): contenedor simple -->
+<div class="container py-4">
 <?php endif; ?>
