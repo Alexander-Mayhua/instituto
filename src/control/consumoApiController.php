@@ -2,7 +2,8 @@
 // src/control/consumoApiController.php
 require_once __DIR__ . '/../library/helpers.php';
 require_once __DIR__ . '/../model/ClientApi.php';
-require_once __DIR__ . '/../model/ConsumoApi.php';   // valida token + búsquedas
+require_once __DIR__ . '/../model/ConsumoApi.php';
+require_once __DIR__ . '/../model/Token.php';  // ✅ se agrega para validar token activo
 
 class ConsumoApiController
 {
@@ -14,45 +15,47 @@ class ConsumoApiController
     // Ruta: ?c=consumoapi&a=verDocenteApiByNombreODni
     // Espera: POST { tipo:'verdocenteapibynombreodni', token, data }
     public function verDocenteApiByNombreODni()
-{
-    require_once __DIR__ . '/../model/ConsumoApi.php'; // trae buscarDocentes y (opcional) valida cliente
-    header('Content-Type: application/json; charset=utf-8');
+    {
+        header('Content-Type: application/json; charset=utf-8');
 
-    $tipo  = strtolower($_POST['tipo'] ?? '');
-    $term  = trim((string)($_POST['data'] ?? ''));
-    $token = trim((string)($_POST['token'] ?? '')); // <-- ahora OPCIONAL
+        $tipo  = strtolower($_POST['tipo'] ?? '');
+        $term  = trim((string)($_POST['data'] ?? ''));
+        $token = trim((string)($_POST['token'] ?? ''));
 
-    if ($tipo !== 'verdocenteapibynombreodni') {
-        echo json_encode(['status' => false, 'msg' => 'Parámetro tipo inválido']); return;
-    }
-
-    // ✅ Token OPCIONAL: si viene, se valida; si no viene, se continúa sin bloquear.
-    if ($token !== '') {
-        $parts = array_filter(array_map('trim', explode('-', $token)), 'strlen');
-        $last  = end($parts);
-        $id_cliente = (ctype_digit($last) ? (int)$last : null);
-
-        if (!$id_cliente) {
-            echo json_encode(['status' => false, 'msg' => 'Token inválido o incompleto']); return;
+        if ($tipo !== 'verdocenteapibynombreodni') {
+            echo json_encode(['status' => false, 'msg' => '❌ Parámetro tipo inválido']);
+            return;
         }
 
-        $owner  = ConsumoApi::buscarClienteById($id_cliente);
-        $estado = is_array($owner) ? ($owner['estado'] ?? null) : null;
-        if (!$owner || $estado !== 'Activo') {
-            echo json_encode(['status' => false, 'msg' => 'Error, cliente no activo o no encontrado']); return;
+        // ✅ Validar token: ahora es obligatorio y debe estar activo
+        if ($token === '') {
+            echo json_encode(['status' => false, 'msg' => '❌ Token requerido']);
+            return;
         }
-        // Si llega aquí, token válido; pero la búsqueda NO se relaciona al token.
-    }
 
-    if ($term === '') {
-        echo json_encode(['status' => true, 'msg' => '', 'contenido' => []]); return;
-    }
+        $validacion = Token::validarTokenActivo($token);
+        if (!$validacion['valido']) {
+            echo json_encode(['status' => false, 'msg' => '❌ ' . $validacion['msg']]);
+            return;
+        }
 
-    try {
-        $docentes = ConsumoApi::buscarDocentes($term, 50, 0); // DNI exacto o LIKE por nombres/apellidos
-        echo json_encode(['status' => true, 'msg' => '', 'contenido' => $docentes]);
-    } catch (\Throwable $e) {
-        echo json_encode(['status' => false, 'msg' => 'Error interno']);
+        // Si el término está vacío, no buscamos nada
+        if ($term === '') {
+            echo json_encode(['status' => true, 'msg' => '', 'contenido' => []]);
+            return;
+        }
+
+        // ✅ Buscar docentes
+        try {
+            $docentes = ConsumoApi::buscarDocentes($term, 50, 0);
+            echo json_encode([
+                'status' => true,
+                'msg' => '',
+                'contenido' => $docentes,
+                'cliente' => $validacion['data']['razon_social'] ?? null
+            ]);
+        } catch (\Throwable $e) {
+            echo json_encode(['status' => false, 'msg' => 'Error interno del servidor']);
+        }
     }
-}
 }

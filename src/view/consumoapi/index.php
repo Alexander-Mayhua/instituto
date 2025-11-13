@@ -1,8 +1,8 @@
 <?php
 // Vista: buscar DOCENTES con token oculto (validación en backend)
-// Toma el token del servidor (sesión o querystring). El usuario NO lo ve ni lo completa.
-if (session_status() === PHP_SESSION_NONE) session_start();
-$tokenValue = $_SESSION['api_token'] ?? ($_GET['token'] ?? ''); // <- ajusta si usas otra fuente
+
+// 🔒 Token estático temporal para pruebas
+$tokenValue = '5085c6ec3a4c6a82a1e6b8b1ed4d518d-251113-2';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h3 class="mb-0">Consumo de API - Buscar Docentes</h3>
@@ -22,7 +22,7 @@ $tokenValue = $_SESSION['api_token'] ?? ($_GET['token'] ?? ''); // <- ajusta si 
         <input type="hidden" name="tipo" value="verdocenteapibynombreodni">
       </div>
 
-     <div class="col-md-4 d-flex gap-2">
+      <div class="col-md-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary flex-fill">Buscar</button>
         <button type="button" class="btn btn-outline-secondary flex-fill" id="btnLimpiar">Limpiar</button>
       </div>
@@ -42,11 +42,13 @@ document.getElementById('formBuscarDocente').addEventListener('submit', function
   e.preventDefault();
   const formData = new FormData(this);
 
-  // No pedimos token al usuario: se envía el oculto. (El backend valida.)
   document.getElementById('resultado').innerHTML =
     '<div class="text-center text-muted p-3">Consultando API...</div>';
 
-  fetch('?c=consumoapi&a=verDocenteApiByNombreODni', {
+  // 🌐 URL del sistema principal (ajusta si tu ruta es diferente)
+  const apiUrl = 'http://localhost/instituto/?c=consumoapi&a=verDocenteApiByNombreODni';
+
+  fetch(apiUrl, {
     method: 'POST',
     body: formData
   })
@@ -71,14 +73,12 @@ document.getElementById('formBuscarDocente').addEventListener('submit', function
           <thead class="table-light">
             <tr>
               <th>#</th>
-             
               <th>DNI</th>
               <th>Nombres</th>
               <th>Apellidos</th>
               <th>Especialidad</th>
               <th>Grado Académico</th>
               <th>Estado</th>
-            
             </tr>
           </thead>
           <tbody>
@@ -90,14 +90,12 @@ document.getElementById('formBuscarDocente').addEventListener('submit', function
       html += `
         <tr>
           <td>${i}</td>
-         
           <td>${esc(d.dni)}</td>
           <td>${esc(d.nombres)}</td>
           <td>${esc(d.apellidos)}</td>
           <td>${esc(d.especialidad || '-')}</td>
           <td>${esc(d.grado_academico || '')}</td>
           <td><span class="badge bg-${activo ? 'success' : 'secondary'}">${esc(d.estado || '')}</span></td>
-          
         </tr>`;
     });
     html += '</tbody></table></div>';
@@ -110,7 +108,7 @@ document.getElementById('formBuscarDocente').addEventListener('submit', function
       '<div class="alert alert-danger">Error al conectar con el servidor.</div>';
   });
 });
-// 🧹 Botón Limpiar
+
 document.getElementById('btnLimpiar').addEventListener('click', function() {
   document.getElementById('data').value = '';
   document.getElementById('resultado').innerHTML =
